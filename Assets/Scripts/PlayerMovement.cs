@@ -19,17 +19,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        bool movingForward = Input.GetKey(KeyCode.Space);
         float horizontalInput = Input.GetAxis("Horizontal");
         RotateSparrow(horizontalInput);
+        SetAnimation(movingForward, horizontalInput);
 
-        if (Input.GetKey(KeyCode.Space))
+        if (movingForward)
         {
             MoveSparrowForward();
-            animator.SetBool("isWalking", true);
-        }
-        else
-        {
-            animator.SetBool("isWalking", false);
         }
     }
 
@@ -43,5 +40,17 @@ public class PlayerMovement : MonoBehaviour
     void MoveSparrowForward()
     {
         body.velocity = transform.forward * forwardSpeed;
+    }
+
+    void SetAnimation(bool movingForward, float horizontalInput)
+    {
+        if (movingForward || horizontalInput != 0)
+        {
+            animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            animator.SetBool("isWalking", false);
+        }
     }
 }
