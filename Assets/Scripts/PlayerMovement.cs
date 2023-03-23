@@ -6,10 +6,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float forwardSpeed;
     [SerializeField] private float rotationSpeed;
+    [SerializeField] private float jumpStrength;
     private float yRotation;
+    [SerializeField] private Transform groundCheckTransform;
+    [SerializeField] private LayerMask groundLayer;
     private Rigidbody body;
     private Animator animator;
-
 
     void Start()
     {
@@ -19,11 +21,19 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        bool jump = Input.GetKeyDown(KeyCode.M);
         bool movingForward = Input.GetKey(KeyCode.Space);
         float horizontalInput = Input.GetAxis("Horizontal");
-        RotateSparrow(horizontalInput);
-        SetAnimation(movingForward, horizontalInput);
+        
+        bool grounded = Physics.CheckSphere(groundCheckTransform.position, 0.1f, groundLayer);
 
+        RotateSparrow(horizontalInput);
+        UpdateAnimation(grounded, movingForward, horizontalInput);
+
+        if (jump && grounded)
+        {
+            Jump();
+        }
         if (movingForward)
         {
             MoveSparrowForward();
@@ -32,18 +42,35 @@ public class PlayerMovement : MonoBehaviour
 
     void RotateSparrow(float horizontalInput)
     {
+        // Update yRotation according to input
         yRotation += horizontalInput * rotationSpeed * Time.deltaTime;
+        // Convert rotation values to a quaternion to use with rb.MoveRotation()
         Quaternion rotation = Quaternion.Euler(0, yRotation, 0);
         body.MoveRotation(rotation);
     }
 
-    void MoveSparrowForward()
+    void Jump()
     {
-        body.velocity = transform.forward * forwardSpeed;
+        body.AddForce(new Vector3(0, 1 * jumpStrength, 0), ForceMode.Impulse);
     }
 
-    void SetAnimation(bool movingForward, float horizontalInput)
+    void MoveSparrowForward()
     {
+        // Strictly, should prob be in FixedUpdate, since setting rb.velocity
+        body.velocity = new Vector3(transform.forward.x * forwardSpeed, body.velocity.y, transform.forward.z * forwardSpeed); 
+    }
+
+    void UpdateAnimation(bool grounded, bool movingForward, float horizontalInput)
+    {
+        if (grounded)
+        {
+            animator.SetBool("isJumping", false);
+        }
+        else
+        {
+            animator.SetBool("isJumping", true);
+        }
+
         if (movingForward || horizontalInput != 0)
         {
             animator.SetBool("isWalking", true);
