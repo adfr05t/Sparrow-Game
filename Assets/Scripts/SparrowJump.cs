@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Jump : MonoBehaviour
+public class SparrowJump : MonoBehaviour
 {
     [SerializeField] private float jumpStrength;
     private bool grounded;

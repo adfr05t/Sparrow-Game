@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PLayerMovement3 : MonoBehaviour
+public class SparrowMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     private float horizontalInput;
     private float verticalInput;
     private Rigidbody body;
     private Animator animator;
-    [SerializeField] private Jump jumpScript;
+    [SerializeField] private SparrowJump jumpScript;
 
     void Start()
     {
